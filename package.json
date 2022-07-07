@@ -1,6 +1,6 @@
 {
-  "name": "@aguycalled/electrum-client-js",
-  "version": "0.1.14",
+  "name": "@gemlinkofficial/electrum-client-ts",
+  "version": "0.1.145",
   "description": "Electrum protocol client for node.js and browser",
   "main": "index.js",
   "scripts": {
@@ -20,13 +20,13 @@
     "fs": "0.0.1-security",
     "mocha": "^6.2.0"
   },
-  "homepage": "https://github.com/aguycalled/electrum-client-js#readme",
+  "homepage": "https://github.com/gemlink/electrum-client-ts#readme",
   "repository": {
     "type": "git",
-    "url": "git://github.com/aguycalled/electrum-client-js.git"
+    "url": "git://github.com/gemlink/electrum-client-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/aguycalled/electrum-client-js/issues"
+    "url": "https://github.com/gemlink/electrum-client-ts/issues"
   },
   "keywords": [
     "client",
@@ -36,6 +36,6 @@
   "engines": {
     "node": ">=6"
   },
-  "author": "Yuki Akiyama",
+  "author": "Devzx",
   "license": "MIT"
 }

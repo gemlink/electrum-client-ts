@@ -9,7 +9,6 @@ export class ElectrumClient extends SocketClient {
   clientName;
   protocolVersion;
   timeout;
-  keepAliveHandle;
   constructor(host, port, protocol, options?) {
     super(host, port, protocol, options);
   }
@@ -117,7 +116,7 @@ export class ElectrumClient extends SocketClient {
     //list.forEach((event) => this.subscribe.removeAllListeners(event))
 
     // Stop keep alive.
-    clearInterval(this.keepAliveHandle);
+    clearInterval(this.timeout);
 
     setTimeout(() => {
       if (
@@ -131,8 +130,6 @@ export class ElectrumClient extends SocketClient {
         this.persistencePolicy.callback != null
       ) {
         this.persistencePolicy.callback();
-      } else if (this.persistencePolicy == null) {
-        this.reconnect();
       }
     }, 1000);
   }

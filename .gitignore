@@ -58,3 +58,4 @@ typings/
 .env
 
 src/**/*.js
+dist

@@ -1,6 +1,6 @@
 {
   "name": "@gemlinkofficial/electrum-client-ts",
-  "version": "0.1.145",
+  "version": "0.1.16",
   "description": "Electrum protocol client for node.js and browser",
   "main": "index.js",
   "scripts": {

@@ -9,6 +9,7 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
+    "socket.io": "^4.5.1",
     "websocket": "^1.0.29"
   },
   "devDependencies": {

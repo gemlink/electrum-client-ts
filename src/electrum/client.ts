@@ -8,12 +8,17 @@ export class ElectrumClient extends SocketClient {
   timeLastCall;
   clientName;
   protocolVersion;
-  timeout;
+  keepAliveHandle;
+
   constructor(host, port, protocol, options?) {
     super(host, port, protocol, options);
   }
 
-  async connect(clientName, electrumProtocolVersion, persistencePolicy = null) {
+  async connect(
+    clientName,
+    electrumProtocolVersion,
+    persistencePolicy = { maxRetry: 10, callback: null }
+  ) {
     this.persistencePolicy = persistencePolicy;
 
     this.timeLastCall = 0;
@@ -77,25 +82,27 @@ export class ElectrumClient extends SocketClient {
    * logs an error and closes the connection.
    */
   async keepAlive() {
-    if (this.timeout != null) {
-      clearTimeout(this.timeout);
+    if (this.status !== 0) {
+      this.keepAliveHandle = setInterval(
+        async (client) => {
+          if (
+            this.timeLastCall !== 0 &&
+            new Date().getTime() > this.timeLastCall + keepAliveInterval / 2
+          ) {
+            await client.server_ping().catch((err) => {
+              console.error(`ping to server failed: [${err}]`);
+              client.close(); // TODO: we should reconnect
+
+              setTimeout(() => {
+                client.reconnect();
+              }, 500);
+            });
+          }
+        },
+        keepAliveInterval,
+        this // pass this context as an argument to function
+      );
     }
-    this.timeout = setTimeout(() => {
-      if (
-        this.timeLastCall !== 0 &&
-        new Date().getTime() > this.timeLastCall + 5000
-      ) {
-        const pingTimer = setTimeout(() => {
-          this.onError(new Error("keepalive ping timeout"));
-        }, 9000);
-        this.server_ping()
-          .catch((reason) => {
-            console.log("keepalive ping failed because of", reason);
-            clearTimeout(pingTimer);
-          })
-          .then(() => clearTimeout(pingTimer));
-      }
-    }, 5000);
   }
 
   close() {
@@ -116,7 +123,7 @@ export class ElectrumClient extends SocketClient {
     //list.forEach((event) => this.subscribe.removeAllListeners(event))
 
     // Stop keep alive.
-    clearInterval(this.timeout);
+    clearInterval(this.keepAliveHandle);
 
     setTimeout(() => {
       if (
@@ -305,19 +312,4 @@ export class ElectrumClient extends SocketClient {
   blockchain_address_subscribe(address) {
     return this.request("blockchain.address.subscribe", [address]);
   }
-  // blockchain_scripthash_getBalanceBatch(scripthash) {
-  //   return this.requestBatch("blockchain.scripthash.get_balance", scripthash);
-  // }
-  // blockchain_scripthash_listunspentBatch(scripthash) {
-  //   return this.requestBatch("blockchain.scripthash.listunspent", scripthash);
-  // }
-  // blockchain_scripthash_getHistoryBatch(scripthash) {
-  //   return this.requestBatch("blockchain.scripthash.get_history", scripthash);
-  // }
-  // blockchain_transaction_getBatch(tx_hash, verbose) {
-  //   return this.requestBatch("blockchain.transaction.get", tx_hash, verbose);
-  // }
-  // blockchain_transaction_getMerkle(tx_hash, height) {
-  //   return this.request("blockchain.transaction.get_merkle", [tx_hash, height]);
-  // }
 }

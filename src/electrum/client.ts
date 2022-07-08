@@ -128,20 +128,21 @@ export class ElectrumClient extends SocketClient {
     // Stop keep alive.
     clearInterval(this.keepAliveHandle);
 
-    setTimeout(() => {
-      if (
-        this.persistencePolicy != null &&
-        this.persistencePolicy.maxRetry > 0
-      ) {
-        this.reconnect();
-        this.persistencePolicy.maxRetry -= 1;
-      } else if (
-        this.persistencePolicy != null &&
-        this.persistencePolicy.callback != null
-      ) {
-        this.persistencePolicy.callback();
-      }
-    }, 1000);
+    // do not reconnect
+    // setTimeout(() => {
+    //   if (
+    //     this.persistencePolicy != null &&
+    //     this.persistencePolicy.maxRetry > 0
+    //   ) {
+    //     this.reconnect();
+    //     this.persistencePolicy.maxRetry -= 1;
+    //   } else if (
+    //     this.persistencePolicy != null &&
+    //     this.persistencePolicy.callback != null
+    //   ) {
+    //     this.persistencePolicy.callback();
+    //   }
+    // }, 1000);
   }
 
   reconnect() {

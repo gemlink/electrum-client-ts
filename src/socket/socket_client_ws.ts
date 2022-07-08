@@ -51,7 +51,7 @@ export class WebSocketClient {
       client.onopen = () => {
         if (client.readyState === client.OPEN) {
           this.self.onConnect();
-          resolve;
+          resolve(true);
         }
       };
     });

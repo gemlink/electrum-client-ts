@@ -9,7 +9,7 @@ export class ElectrumClient extends SocketClient {
   clientName;
   protocolVersion;
   keepAliveHandle;
-
+  eventsList = [];
   constructor(host, port, protocol, options?) {
     super(host, port, protocol, options);
   }
@@ -45,8 +45,8 @@ export class ElectrumClient extends SocketClient {
         this.onReady();
 
         // Get banner.
-        const banner = await this.server_banner();
-        console.log(banner);
+        // const banner = await this.server_banner();
+        // console.log(banner);
       } catch (err) {
         this.onError(`failed to connect to electrum server: [${err}]`);
       }
@@ -69,6 +69,7 @@ export class ElectrumClient extends SocketClient {
 
       this.callback_message_queue[id] = createPromiseResult(resolve, reject);
 
+      console.log("Send", content);
       this.client.send(content + "\n");
     });
 
@@ -112,15 +113,17 @@ export class ElectrumClient extends SocketClient {
   onClose() {
     super.onClose();
 
-    const list = [
-      "server.peers.subscribe",
-      "blockchain.numblocks.subscribe",
-      "blockchain.headers.subscribe",
-      "blockchain.address.subscribe",
-    ];
+    // const list = [
+    //   "server.peers.subscribe",
+    //   "blockchain.numblocks.subscribe",
+    //   "blockchain.headers.subscribe",
+    //   "blockchain.address.subscribe",
+    // ];
 
     // TODO: We should probably leave listeners if the have persistency policy.
-    //list.forEach((event) => this.subscribe.removeAllListeners(event))
+    this.eventsList.forEach((event) =>
+      this.subscribe.removeAllListeners(event)
+    );
 
     // Stop keep alive.
     clearInterval(this.keepAliveHandle);
@@ -183,6 +186,7 @@ export class ElectrumClient extends SocketClient {
     return this.request("server.features", []);
   }
   server_peers_subscribe() {
+    this.eventsList.push("server.peers.subscribe");
     return this.request("server.peers.subscribe", []);
   }
   blockchain_address_getProof(address) {
@@ -212,24 +216,35 @@ export class ElectrumClient extends SocketClient {
     return this.request("blockchain.scripthash.listunspent", [scripthash]);
   }
   blockchain_scripthash_subscribe(scripthash) {
+    this.eventsList.push("blockchain.scripthash.subscribe");
     return this.request("blockchain.scripthash.subscribe", [scripthash]);
   }
   blockchain_outpoint_subscribe(hash, out) {
+    this.eventsList.push("blockchain.outpoint.subscribe");
     return this.request("blockchain.outpoint.subscribe", [hash, out]);
   }
   blockchain_stakervote_subscribe(scripthash) {
+    this.eventsList.push("blockchain.stakervote.subscribe");
     return this.request("blockchain.stakervote.subscribe", [scripthash]);
   }
   blockchain_consensus_subscribe() {
+    this.eventsList.push("blockchain.consensus.subscribe");
     return this.request("blockchain.consensus.subscribe", []);
   }
   blockchain_dao_subscribe() {
+    this.eventsList.push("blockchain.dao.subscribe");
     return this.request("blockchain.dao.subscribe", []);
   }
   blockchain_scripthash_unsubscribe(scripthash) {
+    this.eventsList = this.eventsList.filter(
+      (e) => e != "blockchain.scripthash.subscribe"
+    );
     return this.request("blockchain.scripthash.unsubscribe", [scripthash]);
   }
   blockchain_outpoint_unsubscribe(hash, out) {
+    this.eventsList = this.eventsList.filter(
+      (e) => e != "blockchain.outpoint.subscribe"
+    );
     return this.request("blockchain.outpoint.unsubscribe", [hash, out]);
   }
   blockchain_block_header(height, cpHeight = 0) {

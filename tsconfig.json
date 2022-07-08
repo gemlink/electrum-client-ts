@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "es2020",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es2020",
+    "target": "es2017",
     "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
@@ -10,7 +10,6 @@
     "resolveJsonModule": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "lib": ["es2020", "dom"],
     "paths": {
       "*": ["node_modules/*"]
     }

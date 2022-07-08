@@ -1,5 +1,5 @@
 import { Socket } from "net";
-
+import { TLSSocket } from "tls";
 const TIMEOUT = 10000;
 
 export class TCPSocketClient {
@@ -14,13 +14,7 @@ export class TCPSocketClient {
         break;
       case "tls":
       case "ssl":
-        let tls;
-        try {
-          tls = require("tls");
-        } catch (e) {
-          throw new Error("tls package could not be loaded");
-        }
-        conn = new tls.TLSSocket(options);
+        conn = new TLSSocket(options);
         break;
       default:
         throw new Error("not supported protocol" + protocol);

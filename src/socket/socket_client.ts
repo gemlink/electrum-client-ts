@@ -1,7 +1,7 @@
-import { EventEmitter } from "events";
-import { TCPSocketClient } from "./socket_client_tcp";
-import { WebSocketClient } from "./socket_client_ws";
-import { MessageParser } from "./util";
+import { EventEmitter } from 'events';
+import { TCPSocketClient } from './socket_client_tcp';
+import { WebSocketClient } from './socket_client_ws';
+import { MessageParser } from './util';
 
 export class SocketClient {
   id = 0;
@@ -28,13 +28,13 @@ export class SocketClient {
     });
 
     switch (protocol) {
-      case "tcp":
-      case "tls":
-      case "ssl":
+      case 'tcp':
+      case 'tls':
+      case 'ssl':
         this.client = new TCPSocketClient(this, host, port, protocol, options);
         break;
-      case "ws":
-      case "wss":
+      case 'ws':
+      case 'wss':
         this.client = new WebSocketClient(this, host, port, protocol, options);
         break;
       default:
@@ -90,17 +90,17 @@ export class SocketClient {
   }
 
   onConnect() {
-    this.subscribe.emit("socket.connected");
+    this.subscribe.emit('socket.connected');
   }
 
   onReady() {
-    this.subscribe.emit("ready");
+    this.subscribe.emit('ready');
   }
 
   onClose() {
     this.status = 0;
     Object.keys(this.callback_message_queue).forEach((key) => {
-      this.onError("close connect");
+      this.onError('close connect');
       delete this.callback_message_queue[key];
     });
   }
@@ -114,6 +114,6 @@ export class SocketClient {
   }
 
   onError(error) {
-    this.subscribe.emit("socket.error", `onError: [${error}]`);
+    this.subscribe.emit('socket.error', `onError: [${error}]`);
   }
 }

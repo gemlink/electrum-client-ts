@@ -1,5 +1,5 @@
-import { SocketClient } from "../socket/socket_client";
-import { createPromiseResult, makeRequest } from "./util";
+import { SocketClient } from '../socket/socket_client';
+import { createPromiseResult, makeRequest } from './util';
 
 export const keepAliveInterval = 120 * 1000; // 2 minutes
 
@@ -23,7 +23,7 @@ export class ElectrumClient extends SocketClient {
 
     this.timeLastCall = 0;
     this.clientName = clientName;
-    this.protocolVersion = electrumProtocolVersion || "1.4";
+    this.protocolVersion = electrumProtocolVersion || '1.4';
     this.persistencePolicy = persistencePolicy;
 
     if (this.status === 0) {
@@ -37,8 +37,8 @@ export class ElectrumClient extends SocketClient {
 
         // Negotiate protocol version.
         const version = await this.server_version(
-          clientName || "electrum-js",
-          electrumProtocolVersion || "1.4"
+          clientName || 'electrum-js',
+          electrumProtocolVersion || '1.4'
         );
         console.log(`Negotiated version: [${version}]`);
 
@@ -48,7 +48,7 @@ export class ElectrumClient extends SocketClient {
         // const banner = await this.server_banner();
         // console.log(banner);
       } catch (err) {
-        this.onError(`failed to connect to electrum server: [${err}]`);
+        throw new Error(`failed to connect to electrum server: [${err}]`);
       }
 
       this.keepAlive();
@@ -57,7 +57,7 @@ export class ElectrumClient extends SocketClient {
 
   async request(method, params) {
     if (this.status === 0) {
-      throw new Error("connection not established");
+      throw new Error('connection not established');
     }
 
     this.timeLastCall = new Date().getTime();
@@ -69,8 +69,8 @@ export class ElectrumClient extends SocketClient {
 
       this.callback_message_queue[id] = createPromiseResult(resolve, reject);
 
-      console.log("Send", content);
-      this.client.send(content + "\n");
+      console.log('Send', content);
+      this.client.send(content + '\n');
     });
 
     return await response;
@@ -146,7 +146,9 @@ export class ElectrumClient extends SocketClient {
   }
 
   reconnect() {
-    console.log("electrum reconnect");
+    console.log('electrum reconnect');
+    this.status = 0;
+    this.close();
     try {
       return this.connect(
         this.clientName,
@@ -154,7 +156,7 @@ export class ElectrumClient extends SocketClient {
         this.persistencePolicy
       );
     } catch (e) {
-      console.log("Failed to reconnect: " + e);
+      console.log('Failed to reconnect: ' + e);
     }
   }
 
@@ -169,163 +171,163 @@ export class ElectrumClient extends SocketClient {
   // https://electrumx.readthedocs.io/en/latest/protocol-methods.html
   //
   server_version(client_name, protocol_version) {
-    return this.request("server.version", [client_name, protocol_version]);
+    return this.request('server.version', [client_name, protocol_version]);
   }
   server_banner() {
-    return this.request("server.banner", []);
+    return this.request('server.banner', []);
   }
   server_ping() {
-    return this.request("server.ping", []);
+    return this.request('server.ping', []);
   }
   server_addPeer(features) {
-    return this.request("server.add_peer", [features]);
+    return this.request('server.add_peer', [features]);
   }
   server_donation_address() {
-    return this.request("server.donation_address", []);
+    return this.request('server.donation_address', []);
   }
   server_features() {
-    return this.request("server.features", []);
+    return this.request('server.features', []);
   }
   server_peers_subscribe() {
-    this.eventsList.push("server.peers.subscribe");
-    return this.request("server.peers.subscribe", []);
+    this.eventsList.push('server.peers.subscribe');
+    return this.request('server.peers.subscribe', []);
   }
   blockchain_address_getProof(address) {
-    return this.request("blockchain.address.get_proof", [address]);
+    return this.request('blockchain.address.get_proof', [address]);
   }
   blockchain_dotnav_resolveName(name, subdomains) {
-    return this.request("blockchain.dotnav.resolve_name", [name, subdomains]);
+    return this.request('blockchain.dotnav.resolve_name', [name, subdomains]);
   }
   blockchain_scripthash_getBalance(scripthash) {
-    return this.request("blockchain.scripthash.get_balance", [scripthash]);
+    return this.request('blockchain.scripthash.get_balance', [scripthash]);
   }
   blockchain_scripthash_getHistory(scripthash, height = 0, to_height = -1) {
-    if (this.protocolVersion == "1.5") {
-      return this.request("blockchain.scripthash.get_history", [
+    if (this.protocolVersion == '1.5') {
+      return this.request('blockchain.scripthash.get_history', [
         scripthash,
         height,
         to_height,
       ]);
     } else {
-      return this.request("blockchain.scripthash.get_history", [scripthash]);
+      return this.request('blockchain.scripthash.get_history', [scripthash]);
     }
   }
   blockchain_scripthash_getMempool(scripthash) {
-    return this.request("blockchain.scripthash.get_mempool", [scripthash]);
+    return this.request('blockchain.scripthash.get_mempool', [scripthash]);
   }
   blockchain_scripthash_listunspent(scripthash) {
-    return this.request("blockchain.scripthash.listunspent", [scripthash]);
+    return this.request('blockchain.scripthash.listunspent', [scripthash]);
   }
   blockchain_scripthash_subscribe(scripthash) {
-    this.eventsList.push("blockchain.scripthash.subscribe");
-    return this.request("blockchain.scripthash.subscribe", [scripthash]);
+    this.eventsList.push('blockchain.scripthash.subscribe');
+    return this.request('blockchain.scripthash.subscribe', [scripthash]);
   }
   blockchain_outpoint_subscribe(hash, out) {
-    this.eventsList.push("blockchain.outpoint.subscribe");
-    return this.request("blockchain.outpoint.subscribe", [hash, out]);
+    this.eventsList.push('blockchain.outpoint.subscribe');
+    return this.request('blockchain.outpoint.subscribe', [hash, out]);
   }
   blockchain_stakervote_subscribe(scripthash) {
-    this.eventsList.push("blockchain.stakervote.subscribe");
-    return this.request("blockchain.stakervote.subscribe", [scripthash]);
+    this.eventsList.push('blockchain.stakervote.subscribe');
+    return this.request('blockchain.stakervote.subscribe', [scripthash]);
   }
   blockchain_consensus_subscribe() {
-    this.eventsList.push("blockchain.consensus.subscribe");
-    return this.request("blockchain.consensus.subscribe", []);
+    this.eventsList.push('blockchain.consensus.subscribe');
+    return this.request('blockchain.consensus.subscribe', []);
   }
   blockchain_dao_subscribe() {
-    this.eventsList.push("blockchain.dao.subscribe");
-    return this.request("blockchain.dao.subscribe", []);
+    this.eventsList.push('blockchain.dao.subscribe');
+    return this.request('blockchain.dao.subscribe', []);
   }
   blockchain_scripthash_unsubscribe(scripthash) {
     this.eventsList = this.eventsList.filter(
-      (e) => e != "blockchain.scripthash.subscribe"
+      (e) => e != 'blockchain.scripthash.subscribe'
     );
-    return this.request("blockchain.scripthash.unsubscribe", [scripthash]);
+    return this.request('blockchain.scripthash.unsubscribe', [scripthash]);
   }
   blockchain_outpoint_unsubscribe(hash, out) {
     this.eventsList = this.eventsList.filter(
-      (e) => e != "blockchain.outpoint.subscribe"
+      (e) => e != 'blockchain.outpoint.subscribe'
     );
-    return this.request("blockchain.outpoint.unsubscribe", [hash, out]);
+    return this.request('blockchain.outpoint.unsubscribe', [hash, out]);
   }
   blockchain_block_header(height, cpHeight = 0) {
-    return this.request("blockchain.block.header", [height, cpHeight]);
+    return this.request('blockchain.block.header', [height, cpHeight]);
   }
   blockchain_block_headers(startHeight, count, cpHeight = 0) {
-    return this.request("blockchain.block.headers", [
+    return this.request('blockchain.block.headers', [
       startHeight,
       count,
       cpHeight,
     ]);
   }
   blockchainEstimatefee(number) {
-    return this.request("blockchain.estimatefee", [number]);
+    return this.request('blockchain.estimatefee', [number]);
   }
   blockchain_headers_subscribe() {
-    return this.request("blockchain.headers.subscribe", []);
+    return this.request('blockchain.headers.subscribe', []);
   }
   blockchain_relayfee() {
-    return this.request("blockchain.relayfee", []);
+    return this.request('blockchain.relayfee', []);
   }
   blockchain_transaction_broadcast(rawtx) {
-    return this.request("blockchain.transaction.broadcast", [rawtx]);
+    return this.request('blockchain.transaction.broadcast', [rawtx]);
   }
   blockchain_transaction_get(tx_hash, verbose) {
-    return this.request("blockchain.transaction.get", [
+    return this.request('blockchain.transaction.get', [
       tx_hash,
       verbose ? verbose : false,
     ]);
   }
   blockchain_transaction_getKeys(tx_hash) {
-    return this.request("blockchain.transaction.get_keys", [tx_hash]);
+    return this.request('blockchain.transaction.get_keys', [tx_hash]);
   }
   blockchain_staking_getKeys(spending_pkh) {
-    return this.request("blockchain.staking.get_keys", [spending_pkh]);
+    return this.request('blockchain.staking.get_keys', [spending_pkh]);
   }
   blockchain_token_getToken(id) {
-    return this.request("blockchain.token.get_token", [id]);
+    return this.request('blockchain.token.get_token', [id]);
   }
   blockchain_token_getNft(id, subid, get_utxo) {
-    return this.request("blockchain.token.get_nft", [
+    return this.request('blockchain.token.get_nft', [
       id,
       subid,
       get_utxo ? get_utxo : false,
     ]);
   }
   blockchain_transaction_getMerkle(tx_hash, height) {
-    return this.request("blockchain.transaction.get_merkle", [tx_hash, height]);
+    return this.request('blockchain.transaction.get_merkle', [tx_hash, height]);
   }
   mempool_getFeeHistogram() {
-    return this.request("mempool.get_fee_histogram", []);
+    return this.request('mempool.get_fee_histogram', []);
   }
   // ---------------------------------
   // protocol 1.1 deprecated method
   // ---------------------------------
   blockchain_utxo_getAddress(tx_hash, index) {
-    return this.request("blockchain.utxo.get_address", [tx_hash, index]);
+    return this.request('blockchain.utxo.get_address', [tx_hash, index]);
   }
   blockchain_numblocks_subscribe() {
-    return this.request("blockchain.numblocks.subscribe", []);
+    return this.request('blockchain.numblocks.subscribe', []);
   }
   // ---------------------------------
   // protocol 1.2 deprecated method
   // ---------------------------------
   blockchain_block_getChunk(index) {
-    return this.request("blockchain.block.get_chunk", [index]);
+    return this.request('blockchain.block.get_chunk', [index]);
   }
   blockchain_address_getBalance(address) {
-    return this.request("blockchain.address.get_balance", [address]);
+    return this.request('blockchain.address.get_balance', [address]);
   }
   blockchain_address_getHistory(address) {
-    return this.request("blockchain.address.get_history", [address]);
+    return this.request('blockchain.address.get_history', [address]);
   }
   blockchain_address_getMempool(address) {
-    return this.request("blockchain.address.get_mempool", [address]);
+    return this.request('blockchain.address.get_mempool', [address]);
   }
   blockchain_address_listunspent(address) {
-    return this.request("blockchain.address.listunspent", [address]);
+    return this.request('blockchain.address.listunspent', [address]);
   }
   blockchain_address_subscribe(address) {
-    return this.request("blockchain.address.subscribe", [address]);
+    return this.request('blockchain.address.subscribe', [address]);
   }
 }

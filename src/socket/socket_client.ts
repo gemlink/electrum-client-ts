@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { TCPSocketClient } from './socket_client_tcp';
-import { WebSocketClient } from './socket_client_ws';
+// import { WebSocketClient } from './socket_client_ws';
 import { MessageParser } from './util';
 
 export class SocketClient {
@@ -13,7 +13,7 @@ export class SocketClient {
   callback_message_queue = {};
   subscribe = new EventEmitter();
   mp;
-  client: TCPSocketClient | WebSocketClient;
+  client: TCPSocketClient;
   constructor(host, port, protocol, options) {
     this.id = 0;
     this.host = host;
@@ -33,10 +33,10 @@ export class SocketClient {
       case 'ssl':
         this.client = new TCPSocketClient(this, host, port, protocol, options);
         break;
-      case 'ws':
-      case 'wss':
-        this.client = new WebSocketClient(this, host, port, protocol, options);
-        break;
+      // case 'ws':
+      // case 'wss':
+      //   this.client = new WebSocketClient(this, host, port, protocol, options);
+      //   break;
       default:
         throw new Error(`invalid protocol: [${protocol}]`);
     }

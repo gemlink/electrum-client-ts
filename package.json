@@ -1,6 +1,6 @@
 {
   "name": "@gemlinkofficial/electrum-client-ts",
-  "version": "0.1.26",
+  "version": "0.1.28",
   "description": "Electrum protocol client for node.js and browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,11 +9,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "build": "tsc --build tsconfig.json",
-    "publush": "npm run build && npm publish --access public"
+    "publish": "npm run build && npm publish --access public"
   },
   "dependencies": {
-    "socket.io": "^4.5.1",
-    "websocket": "^1.0.29"
+    "socket.io": "^4.5.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
